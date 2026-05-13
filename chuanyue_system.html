@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>穿越了，系统没醒？10个唤醒方法</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  background: #020814;
+  color: #FFFFFE;
+}
+
+/* Inline SVG icon system to avoid CDN dependency */
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: currentColor;
+}
+
+:root {
+  --accent: #FCA311;
+  --accent2: #FFC300;
+  --accent3: #E94560;
+  --gold-glow: rgba(252,163,17,0.3);
+  --gold-dim: rgba(252,163,17,0.15);
+  --cyan: #66FCF1;
+  --navy: #14213D;
+  --dark: #020814;
+  --dark2: #0A1628;
+  --gray: #A7A9BE;
+  --light: #E0E1DD;
+}
+
+.slide-container {
+  width: 100%; height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 70px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  overflow: hidden;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.anim-item {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.anim-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bg-grid {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(252,163,17,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(252,163,17,0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.particles {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: floatParticle linear infinite;
+  opacity: 0;
+}
+@keyframes floatParticle {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  pointer-events: none;
+  animation: orbFloat 8s ease-in-out infinite alternate;
+}
+@keyframes orbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, -30px) scale(1.1); }
+}
+
+.slide-number {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  font-size: 14px;
+  color: rgba(252,163,17,0.25);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 36px;
+}
+.section-header i {
+  font-size: 46px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 15px var(--gold-glow));
+}
+.section-header h2 {
+  font-size: 44px;
+  font-weight: 900;
+  color: var(--accent2);
+  letter-spacing: 1px;
+}
+
+/* ===== SLIDE 1 - Hook Cover ===== */
+.slide-1 {
+  background: radial-gradient(ellipse at 50% 30%, #0A1628 0%, #020814 100%);
+  text-align: center;
+}
+.slide-1 .glow-orb-1 {
+  width: 600px; height: 600px;
+  background: var(--accent);
+  top: -200px; right: -100px;
+  opacity: 0.1;
+}
+.slide-1 .glow-orb-2 {
+  width: 400px; height: 400px;
+  background: var(--cyan);
+  bottom: -100px; left: -50px;
+  animation-delay: -4s;
+  opacity: 0.06;
+}
+
+.slide-1 .hero-number {
+  font-size: 180px;
+  font-weight: 900;
+  color: var(--accent);
+  opacity: 0.08;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Noto Serif SC', serif;
+  pointer-events: none;
+  animation: pulseHero 4s ease-in-out infinite;
+}
+@keyframes pulseHero {
+  0%, 100% { opacity: 0.08; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.14; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+.slide-1 .icon-wrap {
+  position: relative;
+  margin-bottom: 24px;
+}
+.slide-1 .icon-main {
+  font-size: 80px;
+  color: var(--accent);
+  animation: pulseIcon 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px var(--gold-glow));
+}
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.slide-1 .icon-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140px; height: 140px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  animation: ringPulse 2.5s ease-in-out infinite;
+  opacity: 0.25;
+}
+.slide-1 .icon-ring:nth-child(3) {
+  width: 180px; height: 180px;
+  animation-delay: 0.5s;
+  opacity: 0.12;
+}
+@keyframes ringPulse {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.25; }
+  50% { transform: translate(-50%,-50%) scale(1.2); opacity: 0; }
+}
+
+.slide-1 .title-main {
+  font-size: 62px;
+  font-weight: 900;
+  color: var(--light);
+  line-height: 1.3;
+  margin-bottom: 14px;
+  letter-spacing: 2px;
+  font-family: 'Noto Serif SC', serif;
+}
+.slide-1 .title-highlight {
+  color: var(--accent2);
+  position: relative;
+  display: inline-block;
+}
+.slide-1 .title-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+  animation: shimmer 2s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.slide-1 .subtitle {
+  font-size: 28px;
+  color: var(--gray);
+  margin-top: 10px;
+  font-weight: 400;
+}
+.slide-1 .accent-line {
+  font-size: 22px;
+  color: var(--accent);
+  margin-top: 10px;
+  letter-spacing: 2px;
+  opacity: 0.9;
+  font-weight: 700;
+}
+.slide-1 .tag-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.slide-1 .tag {
+  background: rgba(252,163,17,0.08);
+  color: var(--accent2);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 40px;
+  border: 1px solid rgba(252,163,17,0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* ===== SLIDE 2 - Topic Reveal ===== */
+.slide-2 {
+  background: radial-gradient(ellipse at 30% 60%, #0A1628 0%, #020814 100%);
+}
+.slide-2 .glow-orb-1 {
+  width: 400px; height: 400px;
+  background: var(--accent);
+  top: -80px; left: -80px;
+}
+.slide-2 .glow-orb-2 {
+  width: 400px; height: 400px;
+  background: var(--cyan);
+  bottom: -80px; right: -80px;
+  animation-delay: -3s;
+  opacity: 0.06;
+}
+
+.slide-2 .reveal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+.slide-2 .reveal-card {
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-align: center;
+  border: 1px solid rgba(252,163,17,0.15);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+}
+.slide-2 .reveal-card:hover {
+  transform: translateY(-4px);
+  background: rgba(252,163,17,0.06);
+}
+.slide-2 .reveal-card i {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px var(--gold-glow));
+}
+.slide-2 .reveal-card .rc-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+.slide-2 .reveal-card .rc-desc {
+  font-size: 15px;
+  color: var(--gray);
+}
+
+.slide-2 .desc-text {
+  font-size: 26px;
+  text-align: center;
+  margin-top: 28px;
+  line-height: 1.7;
+  max-width: 800px;
+  color: var(--gray);
+}
+.slide-2 .desc-text b {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+/* ===== METHOD SLIDES (3-12) ===== */
+.method-slide {
+  background: radial-gradient(ellipse at 50% 50%, #0A1628 0%, #020814 100%);
+}
+
+.method-layout {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.method-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.method-num {
+  font-size: 120px;
+  font-weight: 900;
+  color: var(--accent);
+  opacity: 0.15;
+  line-height: 1;
+  font-family: 'Noto Serif SC', serif;
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  pointer-events: none;
+}
+
+.method-icon-box {
+  width: 100px;
+  height: 100px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(252,163,17,0.15), rgba(252,163,17,0.05));
+  border: 2px solid rgba(252,163,17,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.method-icon-box::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(252,163,17,0.08) 25%, transparent 50%);
+  animation: rotateBg 6s linear infinite;
+  pointer-events: none;
+}
+@keyframes rotateBg {
+  100% { transform: rotate(360deg); }
+}
+.method-icon-box i {
+  font-size: 44px;
+  color: var(--accent2);
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 15px var(--gold-glow));
+}
+
+.method-title {
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--accent2);
+  font-family: 'Noto Serif SC', serif;
+}
+
+.method-desc {
+  font-size: 20px;
+  color: var(--gray);
+  line-height: 1.7;
+}
+.method-desc b {
+  color: var(--light);
+  font-weight: 700;
+}
+.method-desc em {
+  font-style: normal;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.method-right {
+  flex: 0 0 320px;
+  height: 340px;
+  background: linear-gradient(135deg, rgba(252,163,17,0.06), rgba(20,33,61,0.4));
+  border-radius: 24px;
+  border: 1px solid rgba(252,163,17,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+.method-right::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(180deg, rgba(252,163,17,0.04), transparent);
+  pointer-events: none;
+}
+.method-right .scene-icon {
+  font-size: 70px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 25px var(--gold-glow));
+  margin-bottom: 16px;
+  animation: pulseIcon 3s ease-in-out infinite;
+}
+.method-right .scene-text {
+  font-size: 18px;
+  color: var(--light);
+  text-align: center;
+  line-height: 1.6;
+  font-weight: 700;
+}
+.method-right .scene-label {
+  font-size: 14px;
+  color: var(--accent);
+  margin-top: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Step indicator bar */
+.step-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  justify-content: flex-start;
+  width: 100%;
+}
+.step-dot {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.08);
+  transition: background 0.3s ease;
+}
+.step-dot.filled {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ===== SLIDE 13 - Final ===== */
+.slide-final {
+  background: radial-gradient(ellipse at 50% 50%, #0A1628 0%, #020814 100%);
+  text-align: center;
+}
+.slide-final .glow-orb-1 {
+  width: 600px; height: 600px;
+  background: var(--accent);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  opacity: 0.06;
+}
+.slide-final .glow-orb-2 {
+  width: 400px; height: 400px;
+  background: var(--cyan);
+  bottom: -100px; left: -100px;
+  animation-delay: -4s;
+  opacity: 0.04;
+}
+
+.slide-final .final-icon-wrap {
+  position: relative;
+  margin-bottom: 24px;
+}
+.slide-final .final-icon {
+  font-size: 80px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 30px var(--gold-glow));
+  position: relative;
+  z-index: 1;
+}
+.slide-final .shield-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140px; height: 140px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  animation: shieldPulse 3s ease-in-out infinite;
+  opacity: 0.15;
+}
+.slide-final .shield-ring:nth-child(2) {
+  width: 180px; height: 180px;
+  animation-delay: 1s;
+}
+.slide-final .shield-ring:nth-child(3) {
+  width: 220px; height: 220px;
+  animation-delay: 2s;
+}
+@keyframes shieldPulse {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.15; }
+  50% { transform: translate(-50%,-50%) scale(1.15); opacity: 0; }
+}
+
+.slide-final .conclusion-text {
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--light);
+  line-height: 1.7;
+  max-width: 900px;
+  font-family: 'Noto Serif SC', serif;
+}
+.slide-final .hl-gold {
+  color: var(--accent2);
+  position: relative;
+  font-weight: 900;
+}
+.slide-final .hl-gold::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+}
+
+.slide-final .conclusion-sub {
+  font-size: 24px;
+  color: var(--gray);
+  margin-top: 24px;
+  line-height: 1.5;
+}
+.slide-final .conclusion-sub b {
+  color: var(--accent);
+}
+
+.slide-final .key-items {
+  display: flex;
+  gap: 24px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.slide-final .key-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(252,163,17,0.06);
+  border-radius: 14px;
+  padding: 14px 22px;
+  border: 1px solid rgba(252,163,17,0.2);
+  backdrop-filter: blur(10px);
+}
+.slide-final .key-item i {
+  font-size: 24px;
+  color: var(--accent);
+}
+.slide-final .key-item span {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--light);
+}
+
+.slide-final .final-line {
+  font-size: 28px;
+  color: var(--accent2);
+  margin-top: 30px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-family: 'Noto Serif SC', serif;
+}
+
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="slideContainer">
+
+  <!-- ============ SLIDE 1: Hook Cover ============ -->
+  <div class="slide slide-1 active" data-index="0">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="particles" id="particles1"></div>
+    <div class="hero-number">10</div>
+    <span class="slide-number">01 / 13</span>
+
+    <div class="anim-item icon-wrap">
+      <i class="fa-solid fa-wand-magic-sparkles icon-main"></i>
+      <div class="icon-ring"></div>
+      <div class="icon-ring"></div>
+    </div>
+    <div class="anim-item">
+      <div class="title-main">你穿越了，<span class="title-highlight">系统却没醒？</span></div>
+    </div>
+    <div class="anim-item">
+      <div class="subtitle">别慌，99%的穿越者都卡在了这一步</div>
+    </div>
+    <div class="anim-item">
+      <div class="accent-line">十种唤醒方法，总有一种适合你</div>
+    </div>
+    <div class="anim-item tag-row">
+      <span class="tag"><i class="fa-solid fa-dragon"></i>&nbsp; 异世界</span>
+      <span class="tag"><i class="fa-solid fa-bolt"></i>&nbsp; 系统激活</span>
+      <span class="tag"><i class="fa-solid fa-scroll"></i>&nbsp; 修炼秘籍</span>
+      <span class="tag"><i class="fa-solid fa-hand-sparkles"></i>&nbsp; 唤醒指南</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 2: Topic Reveal ============ -->
+  <div class="slide slide-2" data-index="1">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <span class="slide-number">02 / 13</span>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-book-open"></i>
+      <h2>为什么系统不醒？</h2>
+    </div>
+    <div class="anim-item reveal-grid">
+      <div class="reveal-card">
+        <i class="fa-solid fa-moon"></i>
+        <div class="rc-title">能量未达阈值</div>
+        <div class="rc-desc">穿越消耗大量灵魂能量</div>
+      </div>
+      <div class="reveal-card">
+        <i class="fa-solid fa-lock"></i>
+        <div class="rc-title">缺少触发条件</div>
+        <div class="rc-desc">每种系统有独特激活方式</div>
+      </div>
+      <div class="reveal-card">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div class="rc-title">世界意志阻隔</div>
+        <div class="rc-desc">位面排斥需主动突破</div>
+      </div>
+      <div class="reveal-card">
+        <i class="fa-solid fa-clock"></i>
+        <div class="rc-title">时机尚未成熟</div>
+        <div class="rc-desc">系统等待命运交汇点</div>
+      </div>
+    </div>
+    <div class="anim-item desc-text">
+      穿越后系统沉默？不是坏了，是需要你用<b>正确的方式</b>去唤醒它。接下来为你揭晓<b>十种</b>最有效的唤醒方法。
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: Method 1 ============ -->
+  <div class="slide method-slide slide-3" data-index="2">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <div class="glow-orb glow-orb-2" style="width:300px;height:300px;background:var(--cyan);bottom:-60px;left:-60px;opacity:0.04;animation-delay:-3s;"></div>
+    <div class="method-num">01</div>
+    <span class="slide-number">03 / 13</span>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-hand-fist"></i>
+      <h2>方法一：意念召唤</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-brain"></i>
+        </div>
+        <div class="method-title">集中精神，默念"系统"</div>
+        <div class="method-desc">
+          这是最基础的唤醒方式。闭上双眼，将<b>全部注意力</b>集中在脑海中，反复默念<em>"系统，醒来"</em>。穿越初期灵魂与身体的连接尚不稳定，需要用<em>强烈的意念</em>去激活系统核心。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-eye scene-icon"></i>
+        <div class="scene-text">闭目凝神<br>三息之内<br>必有回响</div>
+        <div class="scene-label">难度：低</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: Method 2 ============ -->
+  <div class="slide method-slide slide-4" data-index="3">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">04 / 13</span>
+    <div class="method-num">02</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-droplet"></i>
+      <h2>方法二：血液契约</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-droplet"></i>
+        </div>
+        <div class="method-title">以血为引，滴血认主</div>
+        <div class="method-desc">
+          咬破指尖，将<em>鲜血</em>滴在掌心画一个简单的符文。系统以<b>灵魂之力</b>为食，而血液是灵魂在物质世界的载体。滴血认主是最古老的契约方式，<em>成功率高达八成</em>。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-hand-holding-droplet scene-icon"></i>
+        <div class="scene-text">鲜血触符<br>契约即成<br>系统苏醒</div>
+        <div class="scene-label">难度：中低</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: Method 3 ============ -->
+  <div class="slide method-slide slide-5" data-index="4">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">05 / 13</span>
+    <div class="method-num">03</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-bolt-lightning"></i>
+      <h2>方法三：极限刺激</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-bolt-lightning"></i>
+        </div>
+        <div class="method-title">生死之间，触发觉醒</div>
+        <div class="method-desc">
+          将自己置于<em>生死存亡</em>的境地。从悬崖跳下、独斗凶兽、冲入雷暴之中。系统有<b>自我保护机制</b>，当宿主面临真正的死亡威胁时，会<em>强制激活</em>以保全宿主性命。这是最危险但最可靠的方式。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-skull-crossbones scene-icon"></i>
+        <div class="scene-text">生死一线<br>系统自启<br>置之死地而后生</div>
+        <div class="scene-label">难度：极高</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: Method 4 ============ -->
+  <div class="slide method-slide slide-6" data-index="5">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">06 / 13</span>
+    <div class="method-num">04</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-gem"></i>
+      <h2>方法四：灵石献祭</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-gem"></i>
+        </div>
+        <div class="method-title">以灵石之力喂养系统</div>
+        <div class="method-desc">
+          在异世界中寻找<em>灵石、魔力水晶</em>等能量矿石。双手握住灵石，默念系统唤醒口诀，将灵石中的<b>纯净能量</b>引导至系统核心。系统需要<em>外部能量</em>才能完成首次启动，这就像给手机充电一样。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-diamond scene-icon"></i>
+        <div class="scene-text">灵石在手<br>能量灌入<br>系统充能完成</div>
+        <div class="scene-label">难度：中</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: Method 5 ============ -->
+  <div class="slide method-slide slide-7" data-index="6">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">07 / 13</span>
+    <div class="method-num">05</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-star"></i>
+      <h2>方法五：天命触发</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <div class="method-title">等待命运的关键时刻</div>
+        <div class="method-desc">
+          某些系统绑定的是<em>天命</em>——只有在特定的时间、地点、遇见特定的人时才会激活。比如<b>月圆之夜站在古树前</b>、<b>在战场首杀时</b>、或<b>救下某位关键人物</b>时。耐心观察世界给你的<em>暗示</em>。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-moon scene-icon"></i>
+        <div class="scene-text">天命所归<br>时辰已到<br>系统自动苏醒</div>
+        <div class="scene-label">难度：看命</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: Method 6 ============ -->
+  <div class="slide method-slide slide-8" data-index="7">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">08 / 13</span>
+    <div class="method-num">06</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-book-skull"></i>
+      <h2>方法六：古籍诵读</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-book-skull"></i>
+        </div>
+        <div class="method-title">找到上古秘典朗读咒文</div>
+        <div class="method-desc">
+          异世界通常存在<em>上古遗迹或神秘图书馆</em>。找到记载"系统之语"的古籍，大声朗读其中的<b>唤醒咒文</b>。这些咒文是远古时代系统创造者留下的<em>后门程序</em>，能直接绕过激活锁。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-scroll scene-icon"></i>
+        <div class="scene-text">古籍翻页<br>咒文出口<br>系统解锁</div>
+        <div class="scene-label">难度：中高</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 9: Method 7 ============ -->
+  <div class="slide method-slide slide-9" data-index="8">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">09 / 13</span>
+    <div class="method-num">07</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-handshake-angle"></i>
+      <h2>方法七：结缘异族</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-handshake-angle"></i>
+        </div>
+        <div class="method-title">与异族生物建立羁绊</div>
+        <div class="method-desc">
+          精灵、龙族、妖兽等<em>高阶异族</em>天生拥有激活系统的能力。与它们建立<b>灵魂羁绊</b>，它们的能量会自动渗透你的系统核心，<em>催化激活过程</em>。这是最浪漫的唤醒方式。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-dragon scene-icon"></i>
+        <div class="scene-text">龙之契约<br>灵魂共鸣<br>羁绊激活系统</div>
+        <div class="scene-label">难度：中</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 10: Method 8 ============ -->
+  <div class="slide method-slide slide-10" data-index="9">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">10 / 13</span>
+    <div class="method-num">08</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-fire-flame-curved"></i>
+      <h2>方法八：修炼突破</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+        </div>
+        <div class="method-title">提升修为自然激活</div>
+        <div class="method-desc">
+          不走捷径，老老实实<em>修炼</em>。当你的实力突破某个<b>关键境界</b>时（如筑基、金丹等），体内的灵力会自动将系统<em>冲刷激活</em>。这种方式激活的系统<b>最稳定</b>，后续升级也更顺畅。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-yin-yang scene-icon"></i>
+        <div class="scene-text">灵力运转<br>突破瓶颈<br>系统顺势激活</div>
+        <div class="scene-label">难度：中高</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 11: Method 9 ============ -->
+  <div class="slide method-slide slide-11" data-index="10">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <span class="slide-number">11 / 13</span>
+    <div class="method-num">09</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-hat-wizard"></i>
+      <h2>方法九：梦境探索</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-hat-wizard"></i>
+        </div>
+        <div class="method-title">在梦中与系统对话</div>
+        <div class="method-desc">
+          入睡后保持<em>清醒梦</em>状态，在梦境中寻找系统的化身——通常是一扇<b>金色大门</b>或一颗<em>发光的种子</em>。与它沟通，说服它醒来。梦境是灵魂最自由的时刻，<b>沟通效率最高</b>。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-cloud-moon scene-icon"></i>
+        <div class="scene-text">入梦寻门<br>推门而入<br>系统苏醒</div>
+        <div class="scene-label">难度：高</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 12: Method 10 ============ -->
+  <div class="slide method-slide slide-12" data-index="11">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1" style="width:400px;height:400px;background:var(--accent);top:-80px;right:-80px;"></div>
+    <div class="particles" id="particles12"></div>
+    <span class="slide-number">12 / 13</span>
+    <div class="method-num">10</div>
+
+    <div class="anim-item section-header">
+      <i class="fa-solid fa-infinity"></i>
+      <h2>方法十：万物共鸣</h2>
+    </div>
+    <div class="anim-item method-layout">
+      <div class="method-left">
+        <div class="method-icon-box">
+          <i class="fa-solid fa-infinity"></i>
+        </div>
+        <div class="method-title">与世界融为一体</div>
+        <div class="method-desc">
+          最高境界的唤醒方式。放下一切执念，<em>完全融入</em>这个世界——感受风的温度、倾听大地的脉搏、与万物共鸣。当你的灵魂<b>频率与这个世界同频</b>时，系统会<em>自然觉醒</em>。这是传说中的<em>"道法自然"</em>式唤醒。
+        </div>
+        <div class="step-bar">
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+          <div class="step-dot filled"></div>
+        </div>
+      </div>
+      <div class="method-right">
+        <i class="fa-solid fa-sun scene-icon"></i>
+        <div class="scene-text">万物共鸣<br>天人合一<br>终极觉醒</div>
+        <div class="scene-label">难度：传说</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 13: Final ============ -->
+  <div class="slide slide-final" data-index="12">
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="particles" id="particles13"></div>
+    <span class="slide-number">13 / 13</span>
+
+    <div class="anim-item final-icon-wrap">
+      <div class="shield-ring"></div>
+      <div class="shield-ring"></div>
+      <div class="shield-ring"></div>
+      <i class="fa-solid fa-wand-magic-sparkles final-icon"></i>
+    </div>
+    <div class="anim-item conclusion-text">
+      穿越只是起点
+    </div>
+    <div class="anim-item conclusion-text">
+      <span class="hl-gold">唤醒系统</span>才是真正的冒险
+    </div>
+    <div class="anim-item conclusion-sub">
+      选择适合你的唤醒方式，开启属于你的<b>异世界传说</b>
+    </div>
+    <div class="anim-item key-items">
+      <div class="key-item">
+        <i class="fa-solid fa-brain"></i>
+        <span>意念召唤</span>
+      </div>
+      <div class="key-item">
+        <i class="fa-solid fa-droplet"></i>
+        <span>血液契约</span>
+      </div>
+      <div class="key-item">
+        <i class="fa-solid fa-bolt-lightning"></i>
+        <span>极限刺激</span>
+      </div>
+      <div class="key-item">
+        <i class="fa-solid fa-infinity"></i>
+        <span>万物共鸣</span>
+      </div>
+    </div>
+    <div class="anim-item final-line">
+      愿你的系统，早日苏醒
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var totalSlides = slides.length;
+  var current = 0;
+  var isAnimating = false;
+
+  function createParticles(containerId, count) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    for (var i = 0; i < count; i++) {
+      var p = document.createElement('div');
+      p.className = 'particle';
+      var size = Math.random() * 4 + 2;
+      var left = Math.random() * 100;
+      var duration = Math.random() * 8 + 8;
+      var delay = Math.random() * 10;
+      p.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + left + '%;background:hsl(40,90%,60%);box-shadow:0 0 ' + (size*2) + 'px hsl(40,90%,60%);animation-duration:' + duration + 's;animation-delay:' + delay + 's;';
+      container.appendChild(p);
+    }
+  }
+
+  createParticles('particles1', 18);
+  createParticles('particles12', 15);
+  createParticles('particles13', 18);
+
+  function animateItems(slideEl) {
+    var items = slideEl.querySelectorAll('.anim-item');
+    items.forEach(function(item) { item.classList.remove('visible'); });
+    items.forEach(function(item, idx) {
+      setTimeout(function() {
+        item.classList.add('visible');
+      }, 150 + idx * 200);
+    });
+  }
+
+  function goTo(index) {
+    if (index === current || isAnimating || index < 0 || index >= totalSlides) return;
+    isAnimating = true;
+    slides[current].classList.remove('active');
+    slides[current].querySelectorAll('.anim-item').forEach(function(item) { item.classList.remove('visible'); });
+    current = index;
+    slides[current].classList.add('active');
+    animateItems(slides[current]);
+    setTimeout(function() { isAnimating = false; }, 800);
+  }
+
+  function next() { if (current < totalSlides - 1) goTo(current + 1); }
+  function prev() { if (current > 0) goTo(current - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault(); next();
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); prev();
+    }
+  });
+
+  var wheelTimeout = false;
+  document.addEventListener('wheel', function(e) {
+    if (wheelTimeout) return;
+    wheelTimeout = true;
+    if (e.deltaY > 0) next(); else prev();
+    setTimeout(function() { wheelTimeout = false; }, 800);
+  }, { passive: true });
+
+  var touchStartY = 0;
+  document.addEventListener('touchstart', function(e) { touchStartY = e.touches[0].clientY; });
+  document.addEventListener('touchend', function(e) {
+    var diff = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) next(); else prev();
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    var x = e.clientX;
+    var w = window.innerWidth;
+    if (x > w * 0.75) next();
+    else if (x < w * 0.25) prev();
+  });
+
+  animateItems(slides[0]);
+})();
+</script>
+</body>
+</html>

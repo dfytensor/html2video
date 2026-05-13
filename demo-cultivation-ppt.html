@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修仙体系 - 图标库集成演示</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a12;--fg:#e8e6e3;--accent:#a78bfa;
+  --accent2:#f97316;--accent3:#06b6d4;--surface:rgba(255,255,255,0.04);
+}
+body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,sans-serif;overflow:hidden;width:1080px;height:1920px}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1920px;opacity:0;visibility:hidden;display:flex;flex-direction:column;padding:80px}
+.slide.active{opacity:1;visibility:visible}
+
+.icon-img{display:inline-block;flex-shrink:0}
+.icon-img svg{width:100%;height:100%}
+
+.bg-deco{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0}
+.bg-deco .ghost{position:absolute;font-size:280px;font-weight:900;opacity:0.03;color:var(--accent)}
+.bg-deco .glow{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15}
+.content{position:relative;z-index:1;display:flex;flex-direction:column;gap:32px;flex:1}
+
+.nav-dots{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:100}
+.nav-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--accent);transform:scale(1.3)}
+
+.slide-1 .hook-title{font-size:96px;font-weight:900;line-height:1.1;letter-spacing:-2px}
+.slide-1 .hook-sub{font-size:40px;font-weight:300;opacity:0.7;margin-top:24px}
+.slide-1 .hook-accent{font-size:28px;color:var(--accent2);margin-top:16px;font-weight:600}
+.slide-1 .hero-icon{width:200px;height:200px;margin-top:40px}
+.slide-1 .hero-icon img{width:100%;height:100%;filter:invert(1) sepia(1) saturate(3) hue-rotate(200deg)}
+
+.slide-2 .section-title{font-size:56px;font-weight:800;border-left:6px solid var(--accent);padding-left:24px}
+.slide-2 .intro-text{font-size:32px;line-height:1.7;opacity:0.85}
+.slide-2 .icon-row{display:flex;gap:32px;margin-top:20px;flex-wrap:wrap}
+.slide-2 .icon-card{background:var(--surface);border-radius:20px;padding:32px;display:flex;align-items:center;gap:20px;width:460px;border:1px solid rgba(255,255,255,0.06)}
+.slide-2 .icon-card img{width:72px;height:72px;filter:invert(1)}
+.slide-2 .icon-card .card-text{font-size:26px;font-weight:600}
+.slide-2 .icon-card .card-desc{font-size:20px;opacity:0.6;margin-top:4px}
+
+.slide-3 .section-title{font-size:48px;font-weight:800;text-align:center}
+.slide-3 .element-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:32px}
+.slide-3 .element-card{background:var(--surface);border-radius:24px;padding:40px;display:flex;flex-direction:column;align-items:center;gap:16px;border:1px solid rgba(255,255,255,0.06);text-align:center}
+.slide-3 .element-card img{width:96px;height:96px;filter:invert(1)}
+.slide-3 .element-card .el-name{font-size:36px;font-weight:800}
+.slide-3 .element-card .el-desc{font-size:22px;opacity:0.6}
+
+.slide-4 .section-title{font-size:48px;font-weight:800;text-align:center}
+.slide-4 .flow{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:40px;flex-wrap:wrap}
+.slide-4 .flow-step{background:var(--surface);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;align-items:center;gap:12px;width:180px;border:1px solid rgba(255,255,255,0.06);text-align:center}
+.slide-4 .flow-step img{width:64px;height:64px;filter:invert(1)}
+.slide-4 .flow-step .step-name{font-size:24px;font-weight:700}
+.slide-4 .flow-step .step-desc{font-size:18px;opacity:0.5}
+.slide-4 .flow-arrow{font-size:36px;color:var(--accent);opacity:0.4}
+
+.slide-5 .section-title{font-size:48px;font-weight:800;text-align:center}
+.slide-5 .beast-grid{display:flex;gap:28px;margin-top:32px;justify-content:center;flex-wrap:wrap}
+.slide-5 .beast-card{background:var(--surface);border-radius:24px;padding:36px;width:280px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;border:1px solid rgba(255,255,255,0.06)}
+.slide-5 .beast-card img{width:100px;height:100px;filter:invert(1)}
+.slide-5 .beast-card .beast-name{font-size:32px;font-weight:800}
+.slide-5 .beast-card .beast-desc{font-size:20px;opacity:0.6}
+
+.slide-6 .section-title{font-size:48px;font-weight:800;text-align:center}
+.slide-6 .treasure-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px;margin-top:32px}
+.slide-6 .treasure-card{background:var(--surface);border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;border:1px solid rgba(255,255,255,0.06)}
+.slide-6 .treasure-card img{width:64px;height:64px;filter:invert(1)}
+.slide-6 .treasure-card .t-name{font-size:22px;font-weight:700}
+.slide-6 .treasure-card .t-desc{font-size:16px;opacity:0.5}
+
+.slide-7 .end-title{font-size:72px;font-weight:900;text-align:center;margin-top:200px}
+.slide-7 .end-sub{font-size:36px;text-align:center;opacity:0.6;margin-top:24px}
+.slide-7 .end-icons{display:flex;gap:40px;justify-content:center;margin-top:80px}
+.slide-7 .end-icons img{width:80px;height:80px;filter:invert(1)}
+</style>
+</head>
+<body>
+
+<div class="nav-dots" id="navDots"></div>
+
+<div class="slide slide-1" id="slide-0">
+  <div class="bg-deco">
+    <div class="ghost" style="top:-40px;right:-60px">仙</div>
+    <div class="glow" style="width:600px;height:600px;background:var(--accent);top:-200px;left:-200px"></div>
+    <div class="glow" style="width:400px;height:400px;background:var(--accent2);bottom:-100px;right:-100px"></div>
+  </div>
+  <div class="content" style="justify-content:center;align-items:center;text-align:center">
+    <div class="hero-icon an"><img src="assets/icons/cultivation/yin-yang.svg" alt="阴阳"></div>
+    <div class="hook-title an" style="color:var(--accent)">道生一，一生二</div>
+    <div class="hook-sub an">99%的人不知道的修仙真相</div>
+    <div class="hook-accent an">五行 · 灵兽 · 丹药 · 功法 — 完整体系解密</div>
+  </div>
+</div>
+
+<div class="slide slide-2" id="slide-1">
+  <div class="bg-deco">
+    <div class="ghost" style="top:200px;left:-80px;font-size:400px">道</div>
+    <div class="glow" style="width:500px;height:500px;background:#06b6d4;bottom:-200px;right:-100px"></div>
+  </div>
+  <div class="content">
+    <div class="section-title an">什么是修仙？</div>
+    <div class="intro-text an">
+      修仙，即通过<strong style="color:var(--accent)">修炼</strong>提升自身境界，最终追求<strong style="color:var(--accent2)">长生不老</strong>的过程。
+      修炼者需感悟天地灵气，淬炼肉身，凝聚元神，跨越重重天劫。
+    </div>
+    <div class="icon-row an">
+      <div class="icon-card">
+        <img src="assets/icons/cultivation/meditation.svg" alt="打坐">
+        <div><div class="card-text">冥想修炼</div><div class="card-desc">感悟天地灵气</div></div>
+      </div>
+      <div class="icon-card">
+        <img src="assets/icons/cultivation/aura.svg" alt="灵气">
+        <div><div class="card-text">灵气外放</div><div class="card-desc">真气充盈周身</div></div>
+      </div>
+    </div>
+    <div class="icon-row an">
+      <div class="icon-card">
+        <img src="assets/icons/cultivation/scroll-unfurled.svg" alt="功法">
+        <div><div class="card-text">功法卷轴</div><div class="card-desc">传承修炼秘法</div></div>
+      </div>
+      <div class="icon-card">
+        <img src="assets/icons/cultivation/energy-shield.svg" alt="护体">
+        <div><div class="card-text">护体真气</div><div class="card-desc">凝聚护身罡气</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-3" id="slide-2">
+  <div class="bg-deco">
+    <div class="glow" style="width:600px;height:600px;background:#ef4444;top:-200px;left:-200px"></div>
+    <div class="glow" style="width:400px;height:400px;background:#3b82f6;bottom:-100px;right:-100px"></div>
+  </div>
+  <div class="content">
+    <div class="section-title an">五行体系 — 天地之本</div>
+    <div class="element-grid">
+      <div class="element-card an" style="border-color:rgba(239,68,68,0.3)">
+        <img src="assets/icons/cultivation/fire.svg" alt="火" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(330deg)">
+        <div class="el-name" style="color:#ef4444">火</div>
+        <div class="el-desc">焚烧万物，克制金行</div>
+      </div>
+      <div class="element-card an" style="border-color:rgba(59,130,246,0.3)">
+        <img src="assets/icons/cultivation/water-drop.svg" alt="水" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(180deg)">
+        <div class="el-name" style="color:#3b82f6">水</div>
+        <div class="el-desc">润泽万物，克制火行</div>
+      </div>
+      <div class="element-card an" style="border-color:rgba(234,179,8,0.3)">
+        <img src="assets/icons/cultivation/lightning-frequency.svg" alt="雷" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(50deg)">
+        <div class="el-name" style="color:#eab308">雷</div>
+        <div class="el-desc">天罚之力，渡劫之雷</div>
+      </div>
+      <div class="element-card an" style="border-color:rgba(34,197,94,0.3)">
+        <img src="assets/icons/cultivation/windmill.svg" alt="风" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(90deg)">
+        <div class="el-name" style="color:#22c55e">风</div>
+        <div class="el-desc">无形无相，迅如疾风</div>
+      </div>
+    </div>
+    <div class="element-grid" style="margin-top:8px">
+      <div class="element-card an" style="border-color:rgba(168,85,247,0.3)">
+        <img src="assets/icons/cultivation/mountains.svg" alt="山" style="filter:invert(1)">
+        <div class="el-name" style="color:#a855f7">土/山</div>
+        <div class="el-desc">厚重沉稳，万物之基</div>
+      </div>
+      <div class="element-card an" style="border-color:rgba(251,191,36,0.3)">
+        <img src="assets/icons/cultivation/thunderball.svg" alt="雷劫" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(50deg)">
+        <div class="el-name" style="color:#fbbf24">天劫</div>
+        <div class="el-desc">修为瓶颈，天道考验</div>
+      </div>
+      <div class="element-card an" style="border-color:rgba(6,182,212,0.3)">
+        <img src="assets/icons/cultivation/yin-yang.svg" alt="阴阳" style="filter:invert(1) sepia(1) saturate(3) hue-rotate(180deg)">
+        <div class="el-name" style="color:#06b6d4">阴阳</div>
+        <div class="el-desc">万物之源，道之根本</div>
+      </div>
+      <div class="element-card an" style="border-color:rgba(249,115,22,0.3)">
+        <img src="assets/icons/cultivation/sun.svg" alt="日" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(330deg)">
+        <div class="el-name" style="color:#f97316">日/阳</div>
+        <div class="el-desc">纯阳之力，烈日灼心</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-4" id="slide-3">
+  <div class="bg-deco">
+    <div class="glow" style="width:500px;height:500px;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  </div>
+  <div class="content">
+    <div class="section-title an">修炼境界 — 步步登仙</div>
+    <div class="flow an">
+      <div class="flow-step"><img src="assets/icons/cultivation/mushroom.svg" alt="凡人"><div class="step-name">凡人</div><div class="step-desc">未入修炼</div></div>
+      <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="flow-step"><img src="assets/icons/cultivation/meditation.svg" alt="练气"><div class="step-name">练气</div><div class="step-desc">聚气凝神</div></div>
+      <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="flow-step"><img src="assets/icons/cultivation/lotus-flower.svg" alt="筑基"><div class="step-name">筑基</div><div class="step-desc">道基初成</div></div>
+      <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="flow-step"><img src="assets/icons/cultivation/crystal-cluster.svg" alt="金丹"><div class="step-name">金丹</div><div class="step-desc">丹成大道</div></div>
+    </div>
+    <div class="flow an" style="margin-top:24px">
+      <div class="flow-step"><img src="assets/icons/cultivation/aura.svg" alt="元婴"><div class="step-name">元婴</div><div class="step-desc">元神出窍</div></div>
+      <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="flow-step"><img src="assets/icons/cultivation/portal.svg" alt="化神"><div class="step-name">化神</div><div class="step-desc">天人合一</div></div>
+      <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="flow-step"><img src="assets/icons/cultivation/lightning-frequency.svg" alt="渡劫"><div class="step-name">渡劫</div><div class="step-desc">天劫考验</div></div>
+      <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+      <div class="flow-step"><img src="assets/icons/cultivation/star-prominences.svg" alt="飞升"><div class="step-name" style="color:var(--accent)">飞升</div><div class="step-desc">得道成仙</div></div>
+    </div>
+    <div class="icon-row an" style="margin-top:40px;justify-content:center">
+      <div class="icon-card" style="width:320px">
+        <img src="assets/icons/cultivation/telepathy.svg" alt="神识">
+        <div><div class="card-text">神识传音</div><div class="card-desc">高阶修士专属</div></div>
+      </div>
+      <div class="icon-card" style="width:320px">
+        <img src="assets/icons/cultivation/bleeding-eye.svg" alt="天眼">
+        <div><div class="card-text">天眼通</div><div class="card-desc">洞察万物本质</div></div>
+      </div>
+      <div class="icon-card" style="width:320px">
+        <img src="assets/icons/cultivation/half-heart.svg" alt="道心">
+        <div><div class="card-text">道心坚固</div><div class="card-desc">心境如磐石</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-5" id="slide-4">
+  <div class="bg-deco">
+    <div class="ghost" style="bottom:-40px;left:-40px;font-size:350px">兽</div>
+  </div>
+  <div class="content">
+    <div class="section-title an">上古灵兽</div>
+    <div class="beast-grid an">
+      <div class="beast-card">
+        <img src="assets/icons/cultivation/dragon-head.svg" alt="龙" style="filter:invert(1) sepia(1) saturate(3) hue-rotate(200deg)">
+        <div class="beast-name" style="color:var(--accent)">青龙</div>
+        <div class="beast-desc">东方守护，掌控雷雨</div>
+      </div>
+      <div class="beast-card">
+        <img src="assets/icons/cultivation/phoenix-flaming.svg" alt="凤" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(330deg)">
+        <div class="beast-name" style="color:#ef4444">朱雀</div>
+        <div class="beast-desc">南方守护，浴火重生</div>
+      </div>
+      <div class="beast-card">
+        <img src="assets/icons/cultivation/snake.svg" alt="蛇" style="filter:invert(1) sepia(1) saturate(3) hue-rotate(90deg)">
+        <div class="beast-name" style="color:#22c55e">腾蛇</div>
+        <div class="beast-desc">潜在深渊，化蛟成龙</div>
+      </div>
+    </div>
+    <div class="beast-grid an" style="margin-top:16px">
+      <div class="beast-card">
+        <img src="assets/icons/cultivation/tortoise.svg" alt="玄武" style="filter:invert(1) sepia(1) saturate(3) hue-rotate(180deg)">
+        <div class="beast-name" style="color:#06b6d4">玄武</div>
+        <div class="beast-desc">北方守护，龟蛇合体</div>
+      </div>
+      <div class="beast-card">
+        <img src="assets/icons/cultivation/dragon-breath.svg" alt="龙息" style="filter:invert(1) sepia(1) saturate(5) hue-rotate(330deg)">
+        <div class="beast-name" style="color:var(--accent2)">龙息</div>
+        <div class="beast-desc">毁天灭地之威</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-6" id="slide-5">
+  <div class="bg-deco">
+    <div class="glow" style="width:500px;height:500px;background:var(--accent2);top:30%;right:-200px"></div>
+  </div>
+  <div class="content">
+    <div class="section-title an">天材地宝</div>
+    <div class="treasure-grid an">
+      <div class="treasure-card"><img src="assets/icons/cultivation/cauldron.svg" alt="丹炉"><div class="t-name">丹炉</div><div class="t-desc">炼丹必备</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/potion-ball.svg" alt="丹药"><div class="t-name">丹药</div><div class="t-desc">提升修为</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/crystal-cluster.svg" alt="灵石"><div class="t-name">灵石</div><div class="t-desc">修炼货币</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/crystal-bars.svg" alt="灵晶"><div class="t-name">灵晶</div><div class="t-desc">高阶灵物</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/scroll-unfurled.svg" alt="功法"><div class="t-name">功法</div><div class="t-desc">修炼秘籍</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/tied-scroll.svg" alt="秘籍"><div class="t-name">秘籍</div><div class="t-desc">封印传承</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/diamond-hard.svg" alt="法器"><div class="t-name">法器</div><div class="t-desc">硬如金刚</div></div>
+      <div class="treasure-card"><img src="assets/icons/cultivation/gem-chain.svg" alt="灵珠"><div class="t-name">灵珠</div><div class="t-desc">串珠法器</div></div>
+    </div>
+    <div class="icon-row an" style="margin-top:24px;justify-content:center">
+      <div class="icon-card" style="width:400px;border-color:rgba(249,115,22,0.3)">
+        <img src="assets/icons/cultivation/crossed-swords.svg" alt="剑" style="filter:invert(1) sepia(1) saturate(3) hue-rotate(200deg)">
+        <div><div class="card-text" style="color:var(--accent2)">飞剑</div><div class="card-desc">御剑飞行，剑修之本</div></div>
+      </div>
+      <div class="icon-card" style="width:400px;border-color:rgba(239,68,68,0.3)">
+        <img src="assets/icons/cultivation/sword-wound.svg" alt="剑气" style="filter:invert(1) sepia(1) saturate(3) hue-rotate(330deg)">
+        <div><div class="card-text" style="color:#ef4444">剑气</div><div class="card-desc">无形剑意，斩断虚妄</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-7" id="slide-6">
+  <div class="bg-deco">
+    <div class="ghost" style="top:100px;left:50%;transform:translateX(-50%);font-size:350px">仙</div>
+    <div class="glow" style="width:800px;height:800px;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  </div>
+  <div class="content" style="justify-content:center;align-items:center;text-align:center">
+    <div class="end-title an" style="color:var(--accent)">仙道茫茫</div>
+    <div class="end-sub an">逆天而行，方得始终</div>
+    <div class="end-icons an">
+      <img src="assets/icons/cultivation/yin-yang.svg" alt="">
+      <img src="assets/icons/cultivation/lotus-flower.svg" alt="">
+      <img src="assets/icons/cultivation/star-prominences.svg" alt="">
+      <img src="assets/icons/cultivation/dragon-head.svg" alt="">
+      <img src="assets/icons/cultivation/cauldron.svg" alt="">
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  document.querySelectorAll('.slide').forEach(function(s) {
+    s.querySelectorAll('.an, .anim-item, [style*="animation"]').forEach(function(item) {
+      var clone = item.cloneNode(true);
+      item.parentNode.replaceChild(clone, item);
+    });
+  });
+})();
+
+var slides = document.querySelectorAll(".slide");
+var current = 0;
+var timelines = {};
+
+var navContainer = document.getElementById("navDots");
+slides.forEach(function(_, i) {
+  var dot = document.createElement("div");
+  dot.className = "nav-dot" + (i === 0 ? " active" : "");
+  dot.onclick = function() { goTo(i); };
+  navContainer.appendChild(dot);
+});
+
+function buildTimeline(index) {
+  var tl = gsap.timeline({ paused: true });
+  var el = slides[index];
+  var items = el.querySelectorAll(".an");
+  items.forEach(function(item, i) {
+    tl.from(item, {
+      y: 40 + i * 8,
+      opacity: 0,
+      duration: 0.5 + (i % 4) * 0.1,
+      ease: ["power2.out","power3.out","back.out(1.2)"][i % 3]
+    }, 0.1 + i * 0.12);
+  });
+  return tl;
+}
+
+slides.forEach(function(_, i) {
+  timelines[i] = buildTimeline(i);
+});
+
+function goTo(index) {
+  if (index === current) return;
+  slides[current].classList.remove("active");
+  current = index;
+  slides[current].classList.add("active");
+  document.querySelectorAll(".nav-dot").forEach(function(d, i) {
+    d.classList.toggle("active", i === current);
+  });
+  timelines[current].restart();
+}
+
+slides[0].classList.add("active");
+timelines[0].restart();
+</script>
+</body>
+</html>
