@@ -8,6 +8,8 @@ description: |
   "design script", "semi-auto mode", "image prompts", "口播稿", "半自动".
   Full pipeline: text → HTML (PPT or flowchart mode) → video (MP4).
   Semi-auto pipeline: text → script design + TTS + image prompts → user images → video (MP4).
+  Enhanced with narrative-hook-adapter: multi-slide hook system, three-act structure,
+  inter-slide hook propagation, storyboard animation planning, and enhanced TTS narration.
 ---
 
 # Science Content Video Skill
@@ -24,6 +26,9 @@ User provides science/tech text
         |
         +---> Mode 1/2: Fully-Automatic Pipeline ────────────────────+
         |                                                              |
+        |   Phase 0: Narrative Planning (NEW)                          |
+        |      Hook density + three-act structure + storyboard          |
+        |              |                                               |
         |   Phase 1: Generate HTML demo page                           |
         |      Mode 1 (default): PPT carousel                          |
         |      Mode 2 (user triggers): Flowchart / flat UI             |
@@ -31,36 +36,35 @@ User provides science/tech text
         |              v                                               |
         |   Phase 2: HTML → Video                                      |
         |      Playwright screenshots (PNG)                            |
-        |      Edge TTS narration (MP3)                                |
+        |      Edge TTS narration with hook bridges (MP3)              |
         |      ffmpeg composition (PNG + MP3 → MP4)                    |
         |              |                                               |
         |              v                                               |
         |   Output: MP4 video file                                     |
         |                                                              |
         +---> Mode 3: Semi-Automatic Pipeline ───────────────+         |
-                                                               |         |
-            Step 1: Script Design                              |         |
-               口播稿 + scene descriptions                     |         |
-               Output: _script_design.json                     |         |
-                    |                                        |         |
-                    v                                        |         |
-            Step 2: TTS Generation                            |         |
-               Per-scene voiceover audio                      |         |
-               Output: tts_000.mp3, tts_001.mp3, ...          |         |
-                    |                                        |         |
-                    v                                        |         |
+                                                                |         |
+            Step 1: Script Design (enhanced with hooks)         |         |
+                口播稿 + scene descriptions + hook propagation  |         |
+                Output: _script_design.json                     |         |
+                     |                                        |         |
+                     v                                        |         |
+            Step 2: TTS Generation (enhanced VO)               |         |
+                Per-scene voiceover with bridge/hook-forward    |         |
+                Output: tts_000.mp3, tts_001.mp3, ...          |         |
+                     |                                        |         |
+                     v                                        |         |
             Step 3: Image Prompt Document                     |         |
-               Per-scene prompts for Midjourney/DALL-E/SD      |         |
-               Image naming: scene_NNN_name.png               |         |
-               Output: _image_prompts.md                      |         |
-                    |                                        |         |
-                    v                                        |         |
+                Per-scene prompts with shot/camera direction    |         |
+                Output: _image_prompts.md                      |         |
+                     |                                        |         |
+                     v                                        |         |
             [User generates images externally]                 |         |
-                    |                                        |         |
-                    v                                        |         |
+                     |                                        |         |
+                     v                                        |         |
             Step 4: Image-to-Video Composition <──────────────+         |
-               User provides image paths → video                       |
-               Output: MP4 video file                                  |
+                User provides image paths → video                       |
+                Output: MP4 video file                                  |
 ```
 
 ---
@@ -328,7 +332,13 @@ Before generating any output, the AI MUST design the complete script structure. 
       "voiceover": "口播稿文本，自然口语化的旁白内容...",
       "visual_description": "场景视觉描述：布局、关键元素、数据点、图示等",
       "duration_estimate": 5.0,
-      "image_filename": "scene_000_hook_cover.png"
+      "image_filename": "scene_000_hook_cover.png",
+      "act": "起因",
+      "hook_type": "STAT",
+      "hook_role": "opening",
+      "hook_forward": "此场景结尾向下一场景传递的钩子/悬念",
+      "shot_size": "CU",
+      "camera_move": "quick_push"
     },
     {
       "index": 1,
@@ -336,11 +346,28 @@ Before generating any output, the AI MUST design the complete script structure. 
       "voiceover": "第二段口播稿...",
       "visual_description": "场景视觉描述...",
       "duration_estimate": 6.5,
-      "image_filename": "scene_001_topic_intro.png"
+      "image_filename": "scene_001_topic_intro.png",
+      "act": "起因",
+      "hook_type": "CHALLENGE",
+      "hook_role": "problem_framing",
+      "hook_forward": "向下一场景的悬念句",
+      "shot_size": "MS",
+      "camera_move": "tracking"
     }
   ]
 }
 ```
+
+**New fields explained:**
+
+| Field | Required | Values | Description |
+|-------|----------|--------|-------------|
+| `act` | Yes | `"起因"` / `"经过"` / `"结果"` | Which act this scene belongs to (three-act structure) |
+| `hook_type` | Yes | `STAT`, `COUNTER`, `MYSTERY`, `CHALLENGE`, `RESULT`, `PROMISE` | Tech-adapted hook type for this scene |
+| `hook_role` | Yes | `opening`, `problem_framing`, `mid_escalation`, `development`, `payoff`, `closing` | This scene's role in the hook propagation chain |
+| `hook_forward` | Yes | Free text (1-2 sentences) | The curiosity gap / half-result / bridge planted at end of this scene for the next |
+| `shot_size` | Recommended | `ELS`, `LS`, `FS`, `MS`, `MCU`, `CU`, `ECU` | Virtual shot size — guides image composition and animation scale |
+| `camera_move` | Recommended | `fixed`, `push`, `pull`, `pan`, `tilt`, `tracking`, `quick_push`, `quick_pull`, `handheld` | Virtual camera movement — guides animation direction |
 
 **Script design rules:**
 - Scene 0 (cover) MUST follow the 3-Second Hook Rule (same as Mode 1/2)
@@ -588,6 +615,10 @@ python scripts/html2video.py --images-dir ./output_images/ --script _script_desi
 16. **Mode 3 script design before prompts** — the script design JSON (`_script_design.json`) MUST be completed before generating the image prompt document (`_image_prompts.md`). Image prompts derive from scene descriptions.
 17. **Mode 3 image verification** — before composing video from user images, AI MUST verify: (a) correct file naming, (b) correct resolution (match video dimensions), (c) all scenes have corresponding images. Report missing/malformed images to user before proceeding.
 18. **Mode 3 voiceover is spoken language** — 口播稿 must use natural spoken Chinese, NOT written/academic style. Read it aloud mentally — if it sounds like a textbook, rewrite it.
+19. **<HARD-GATE> Hook density for 5+ slides** — every video with 5+ slides must have: (a) opening hook (Slide 1), (b) mid-escalation hook (40-60% range), (c) closing hook (last slide). No flat middle sections allowed.
+20. **<HARD-GATE> Inter-slide hook propagation** — every slide (except the last) must plant a curiosity gap for the next slide via TTS bridge, visual tease, question carry, or half-result. No isolated "next slide please" transitions.
+21. **<HARD-GATE> Three-act structure for 6+ slides** — slides must be organized into 起因(~25%) → 经过(~50%) → 结果(~25%). Each act's purpose must be fulfilled.
+22. **Animation speed matches narrative act** — Act 1 fast emphasis (0.15-0.35s), Act 2 medium flow (0.3-0.6s), Act 3 slow resolution (0.5-1.0s). Hook reveals use quick push/pull.
 
 ---
 
@@ -833,6 +864,258 @@ Before finalizing any Slide 1, answer ALL of these. If any answer is "No", the h
 
 ---
 
+## Slide-Level Hook System (Adapted from Narrative Hook Adapter)
+
+The 3-Second Hook Rule governs **Slide 1 only**. This section governs **all remaining slides** — ensuring every slide has a narrative function, every transition creates momentum, and the viewer never feels "this is the boring middle part."
+
+### Tech-Adapted Hook Types
+
+The narrative-hook-adapter defines six hook types (INFO, FATE, REL, TRUTH, TWIST, TIME). For science/tech video, adapt these:
+
+| Hook Type | Code | Core Emotion | Example (Tech Video) |
+|-----------|------|-------------|----------------------|
+| Surprising Stat | STAT | Shock + exclusion | "Most people think JPEG is the best — it's not even close" |
+| Counterintuitive | COUNTER | Cognitive dissonance | "Adding MORE data can make your model WORSE" |
+| Hidden Mechanism | MYSTERY | Curiosity + discovery | "The real magic isn't in the algorithm — it's in what happens AFTER quantization" |
+| Direct Challenge | CHALLENGE | Challenge + social proof | "Can you explain backpropagation in one sentence? 99% can't" |
+| Result Reveal | RESULT | Surprise + payoff | "The result? +11.86 dB — without increasing file size" |
+| Future Promise | PROMISE | Aspiration + efficiency | "And this is just v10. Wait until you see what's coming next" |
+
+### Hook Lifecycle in Video Context
+
+```
+Hook Introduced (curiosity gap opens)
+    ↓
+Hook Developed (information builds, tension rises) ← content slides
+    ↓
+Hook Resolved
+    ├── Full Result → viewer satisfied + new hook introduced
+    └── Half-Result → suspense preserved + new hook → NEXT SLIDE
+```
+
+### Hook Density Rules (Per Video)
+
+<HARD-GATE>
+Every video with 5+ slides MUST satisfy ALL three density requirements. Videos with fewer than 5 slides must still satisfy the opening and closing hook requirements.
+</HARD-GATE>
+
+| Position | Requirement | Timing | Minimum |
+|----------|-------------|--------|---------|
+| **Opening Hook** | Slide 1 (covered by 3-Second Hook Rule) | 0-3s | 1 hook |
+| **Mid-Escalation Hook** | A slide in the middle 40-60% range that raises stakes or reveals a twist | Middle slides | 1 hook per 4 slides |
+| **Closing Hook** | Final slide ends with a forward-looking hook (PROMISE or MYSTERY) | Last slide | 1 hook |
+
+**Mid-Escalation Hook Examples:**
+
+| Situation | Mid-Hook Pattern | Implementation |
+|-----------|-----------------|----------------|
+| Performance benchmarks | "But here's what nobody expected..." | Reveal counterintuitive result |
+| Architecture walkthrough | "This is where most implementations fail" | Show failure point before solution |
+| Version evolution | "v9 was good. v10 broke everything — then fixed it better" | Contrast + turnaround |
+| Comparison | "You might think Method A is better. The data says otherwise" | Challenge assumption |
+
+### Hook Propagation Between Slides (Inter-Slide Hooks)
+
+Slides are not isolated — they form a **hook propagation chain**:
+
+```
+Slide 1: Opening Hook A → Half-Result A + Hook B
+Slide 2: Hook B (carries A's tension) → Full Result B + Hook C
+Slide 3: Hook C → Half-Result C + Hook D
+...
+Slide N: Hook X → Full Result (payoff) + PROMISE hook (future/CTA)
+```
+
+**Inter-slide hook implementation:**
+
+| Technique | How | Example |
+|-----------|-----|---------|
+| **Cliffhanger TTS** | End a slide's narration with an unfinished thought | "But the real breakthrough wasn't the architecture — it was..." (next slide reveals) |
+| **Visual tease** | Show a blurred/obscured element that promises revelation next | Grayed-out chart with "the result will surprise you" |
+| **Question carry** | Ask a question at end of slide, answer at start of next | "Why does 8b outperform 6b by such a huge margin?" → Next slide: quantization analysis |
+| **Contrast setup** | Present "before" state, promise "after" in next slide | "This was v7's result..." → Next slide: "And this is v10" |
+
+**BANNED inter-slide patterns:**
+- "Next, let's look at..." (boring transition)
+- "Moving on to..." (no tension)
+- Any transition that feels like a PowerPoint deck, not a story
+
+### Half-Result Hook Design (Between Slides)
+
+Adapted from the narrative-hook-adapter's half-result patterns:
+
+| Pattern | How It Works | Video Example |
+|---------|-------------|---------------|
+| **Answer half, ask more** | Resolve question A but reveal bigger question B | "We solved quality — but at what cost? The BPP is still too high..." |
+| **False resolution** | Seemingly solved, but a trap | "v10 clean model hits 40 dB! ...But the robust model completely fails at 100 epochs" |
+| **Cost resolution** | Solved but at a price | "Hybrid strategy works beautifully — but you need TWO models loaded simultaneously" |
+| **Perspective flip** | Resolved from one angle, new crisis from another | "From the encoder's perspective, everything works. From the decoder's perspective..." |
+| **Time lock** | Resolved but sets new constraint | "10b quantization works — but only if you can afford 44 BPP" |
+
+---
+
+## Three-Act Video Structure (起因→经过→结果)
+
+<HARD-GATE>
+Videos with 6+ slides MUST follow the three-act structure. The proportion is a guideline (±10% deviation allowed). What matters is that each act's PURPOSE is fulfilled.
+</HARD-GATE>
+
+Map the narrative-hook-adapter's 三段叙事 (setup-development-result) to video slide layout:
+
+| Act | Proportion | Purpose | Slide Position | Hook Requirement |
+|-----|-----------|---------|---------------|-----------------|
+| **起因 (Setup)** | ~25% | Hook + problem + context | Slides 1-2 | Opening hook (Slide 1) + problem framing (Slide 2) |
+| **经过 (Development)** | ~50% | Technical deep-dive + escalating complexity + mid-escalation hook | Slides 3 to N-2 | Mid-escalation hook at peak complexity slide |
+| **结果 (Result)** | ~25% | Resolution + payoff + future hook | Last 1-2 slides | Closing PROMISE/MYSTERY hook |
+
+### Act 1 — 起因 (Setup, ~25%)
+
+**Slides 1-2** (or first ~25% of slides)
+
+| Slide | Function | Content | Hook Role |
+|-------|----------|---------|-----------|
+| Slide 1 | Hook cover | Visual punch + hook title + tension subtitle | 3-Second Hook Rule (existing) |
+| Slide 2 | Problem reveal | Answer the hook's question / reveal the problem / define scope | Resolve Slide 1 hook, plant Slide 3 curiosity |
+
+**Narrative arc:** "Here's something surprising/challenging/important" → "Here's why it matters"
+
+### Act 2 — 经过 (Development, ~50%)
+
+**Middle ~50% of slides**
+
+This is where the existing Mode 1/Mode 2 content generation shines — technical details, architecture, data, comparisons. But it must maintain narrative tension.
+
+| Technique | Purpose | When to Use |
+|-----------|---------|-------------|
+| **Complexity escalation** | Each slide raises the technical bar | Architecture → Implementation → Quantization → Results |
+| **Mid-escalation hook** | A surprise/twist at the 50-60% mark | "v10's robust model FAILED — but that failure led to the breakthrough" |
+| **Tension-release rhythm** | Alternate dense data slides with visual payoff slides | Data chart → Result visualization → More data → Comparison |
+| **Partial reveals** | Don't show the full picture until Act 3 | Show components individually, combine in the result |
+
+**Development slide ordering principles:**
+1. Start with what the viewer understands (familiar concepts)
+2. Build toward what they don't (new innovation)
+3. Insert the mid-escalation hook when complexity peaks
+4. End Act 2 with a setup for the Act 3 payoff
+
+### Act 3 — 结果 (Result, ~25%)
+
+**Last 1-2 slides** (or final ~25%)
+
+| Slide | Function | Content | Hook Role |
+|-------|----------|---------|-----------|
+| N-1 | Payoff | Best results / summary / "the answer" | Full resolution of all major hooks |
+| N | Forward hook | Recommendations / future directions / CTA | Closing PROMISE or MYSTERY hook |
+
+**Narrative arc:** "And here's what we achieved" → "And here's what's coming next"
+
+**Result slide MUST:**
+1. Pay off the opening hook's promise (if Slide 1 asked a question, answer it here)
+2. Show the "after" to contrast with Slide 2's "before"
+3. End with a forward-looking hook (PROMISE: "next version will...", or MYSTERY: "but one question remains...")
+
+---
+
+## Storyboard Animation Planning (分镜→动画映射)
+
+Adapt the narrative-hook-adapter's shot/camera concepts to HTML animation direction. Before writing HTML, plan each slide's "virtual camera" to guide animation choices.
+
+### Shot Size → Animation Scale Mapping
+
+| Shot Size | Abbreviation | HTML Animation Equivalent | Emotional Effect | When to Use |
+|-----------|-------------|--------------------------|-----------------|-------------|
+| Extreme Long Shot | ELS | Full-page entrance, elements tiny/subtle | Scale, context | Environment setup, data overview |
+| Long Shot | LS | Container-level entrance, all elements visible | Establishing | Slide intro, layout reveal |
+| Medium Shot | MS | Group entrance (cards, sections) | Conversational | Comparisons, feature lists |
+| Medium Close-Up | MCU | Single element entrance with detail | Focused attention | Key metric, important statement |
+| Close-Up | CU | Large single element (oversized text, icon) | Emphasis | Hook statement, critical number |
+| Extreme Close-Up | ECU | Single character/number at 120-200px | Maximum emphasis | Hook number, shocking stat |
+
+### Camera Movement → CSS/GSAP Animation Mapping
+
+| Camera Move | HTML Animation | Easing | Emotional Effect | When to Use |
+|------------|---------------|--------|-----------------|-------------|
+| Fixed (固定) | `opacity: 0→1` fade | `power2.out` | Stable, objective | Data display, calm narration |
+| Push in (推) | `scale(0.7)→scale(1)` + `opacity` | `expo.out` | Focus, tension | Key revelation, important detail |
+| Pull out (拉) | `scale(1.2)→scale(1)` + `opacity` | `power2.out` | Reveal, context | Showing full picture after detail |
+| Pan (摇) | `translateX(±80px)→0` + `opacity` | `power3.out` | Directional flow | Process flow, comparison |
+| Tilt (俯摇) | `translateY(±80px)→0` + `opacity` | `power3.out` | Vertical hierarchy | Hierarchies, layer stacks |
+| Tracking (跟) | `translateX/Y` stagger | `power2.out` with stagger | Dynamic, sequential | Step-by-step processes |
+| Quick push (急推) | `scale(0.3)→scale(1.05)→scale(1)` | `back.out(1.5)` | Shock, emphasis | Mid-escalation hook, surprise reveal |
+| Quick pull (急拉) | `scale(1.5)→scale(1)` | `expo.out` | Reveal after tension | Result reveal, "the answer is..." |
+| Handheld (手持) | `rotation(±2deg)` subtle oscillation | `sine.inOut` loop | Urgency, realism | Problem slides, warning content |
+
+### Per-Act Animation Rhythm
+
+| Act | Dominant Camera | Animation Speed | Easing Character | Reason |
+|-----|----------------|----------------|-----------------|--------|
+| Act 1 (Setup) | Push in, Quick push | Fast (0.15-0.35s) | `back.out`, `expo.out` | Grab attention, create urgency |
+| Act 2 (Development) | Mixed, Tracking | Medium (0.3-0.6s) | `power2.out`, `power3.out` | Build understanding, maintain flow |
+| Act 3 (Result) | Pull out, Fixed | Slow (0.5-1.0s) | `power1.out`, `sine.out` | Resolution, satisfaction, calm |
+
+### Storyboard Planning Template
+
+Before generating HTML, complete this per-slide plan:
+
+| Slide | Act | Shot Size | Camera Move | Hook Type | Animation Notes |
+|-------|-----|-----------|-------------|-----------|-----------------|
+| 1 | 起因 | CU→LS | Quick push + pull | STAT | Oversized number hooks, then reveal full layout |
+| 2 | 起因 | MS | Fixed + tracking | CHALLENGE | Cards stagger in, problem framing |
+| 3 | 经过 | LS | Pan | MYSTERY | Architecture flow left→right |
+| 4 | 经过 | MCU→CU | Push in | COUNTER | Mid-hook: counterintuitive result |
+| 5 | 经过 | MS | Tracking | RESULT | Data comparison stagger |
+| N-1 | 结果 | CU→ELS | Quick pull | RESULT | Big number then full picture |
+| N | 结果 | MCU | Fixed | PROMISE | Calm summary, forward-looking |
+
+---
+
+## TTS Narration Script Design (Enhanced)
+
+### Per-Slide VO Structure
+
+Each slide's TTS narration should follow a micro three-act structure:
+
+| VO Section | Proportion | Purpose | Example |
+|-----------|-----------|---------|---------|
+| **Bridge** | ~20% | Connect to previous slide / maintain continuity | "But here's what makes v10 different..." |
+| **Core content** | ~60% | Deliver the slide's information | "The ResBlock encoder uses 4 residual blocks with learnable scaling..." |
+| **Hook forward** | ~20% | Plant curiosity for the next slide | "And the results? Let me show you something that surprised even us." |
+
+### Inter-Slide VO Bridge Patterns
+
+| Pattern | Usage | Example |
+|---------|-------|---------|
+| **Question bridge** | Ask a question at end of slide, answer in next | "So how much does this actually improve? [next slide: +11.86 dB]" |
+| **Contrast bridge** | Set up a contrast resolved in next slide | "v9 got us to +8 dB. But we wanted more. [next: v10 results]" |
+| **Suspense bridge** | Hint at a surprising reveal | "And then we tried something that shouldn't have worked. [next: hybrid strategy]" |
+| **Definition bridge** | Define a concept needed for next slide | "This is what we call hybrid inference. Here's why it matters. [next: dual-model details]" |
+
+### VO Hook Language Rules
+
+<HARD-GATE>
+These rules apply to ALL slides' TTS narration, not just Slide 1.
+</HARD-GATE>
+
+| Rule | BANNED Pattern | Required Pattern |
+|------|---------------|-----------------|
+| First sentence hooks | "接下来我们看..." / "这一页介绍..." | Use a bridge from previous slide or a micro-hook |
+| Last sentence teases | "以上就是..." / "总结一下..." | End with a forward-looking question or promise |
+| No dead transitions | "好的" / "那么" as sentence starters | Cut filler words, start with content |
+| Emotional variety | Flat monologue throughout all slides | Alternate: excitement (results) → calm explanation (architecture) → tension (problems) → payoff (resolution) |
+
+### VO Emotional Curve
+
+| Slide Position | VO Emotion | Speaking Style | Example Tone |
+|---------------|-----------|---------------|-------------|
+| Slide 1 (Hook) | High energy, urgency | Fast, punchy, dramatic | "95% of approaches FAIL at this step!" |
+| Slide 2 (Problem) | Serious, weighty | Measured, emphatic | "Traditional codecs cap out at just 28.76 dB..." |
+| Act 2 slides | Varies with content | Technical but engaged | Clear explanation with moments of surprise |
+| Mid-hook slide | Excited, dramatic | Speed up, emphasis | "But here's what NOBODY expected..." |
+| Result slide | Triumphant, satisfied | Proud, confident | "40.62 dB. That's nearly 12 dB better than baseline." |
+| Final slide | Forward-looking, inspiring | Calm but energized | "And this is just the beginning..." |
+
+---
+
 ## Scene Transitions (Non-Negotiable)
 
 Every multi-slide page MUST follow ALL of these rules:
@@ -876,6 +1159,10 @@ When no visual style is provided, follow [house-style.md](house-style.md) for ae
 14. Do not compose video from user images without verifying naming convention and completeness — always check `scene_NNN_*` pattern before running ffmpeg
 15. Do not generate image prompts without first completing the script design JSON — prompts derive from scene descriptions, not the other way around
 16. Do not proceed to Phase B (video composition) until the user explicitly confirms their images are ready — the human-in-the-loop step is mandatory in Mode 3
+17. Do not create a flat middle section — every video with 5+ slides must have a mid-escalation hook (STAT, COUNTER, MYSTERY, or CHALLENGE) at the 40-60% mark
+18. Do not use dead transition phrases in TTS — banned: "接下来我们看", "好的那么", "以上就是", "下面介绍"
+19. Do not let all slides have the same animation speed — Act 1 must be faster than Act 3
+20. Do not end a slide (except the last) without planting a hook forward to the next slide
 
 ---
 
@@ -1013,6 +1300,28 @@ Extracts per-frame RMS amplitude and frequency bands. Used with GSAP timeline fo
 - [ ] **Cover withholds the answer** — viewer must watch Slide 2+ to resolve curiosity
 - [ ] **Hook video title generated** — `_title.txt` with compelling publish caption (max 30 chars, first 10 chars contain hook)
 - [ ] **Cover thumbnail extracted** — `_cover.png` with best hook frame from Slide 1
+
+### Narrative Hook Verification (All Slides — for videos with 5+ slides)
+
+- [ ] **Opening hook present** — Slide 1 satisfies 3-Second Hook Rule (above)
+- [ ] **Mid-escalation hook present** — at least one slide in the 40-60% range raises stakes with STAT, COUNTER, MYSTERY, or CHALLENGE hook
+- [ ] **Closing hook present** — final slide ends with PROMISE or MYSTERY hook (forward-looking)
+- [ ] **Hook propagation chain intact** — each slide (except last) plants curiosity for the next slide via bridge, tease, or half-result
+- [ ] **No dead transitions** — no slide starts with "接下来我们看" or ends with "以上就是"
+- [ ] **Three-act structure followed** — slides organized into 起因(~25%) → 经过(~50%) → 结果(~25%)
+
+### TTS Narration Quality
+
+- [ ] **Per-slide VO has bridge** — each slide (except Slide 1) starts with a connection to previous slide
+- [ ] **Per-slide VO has hook forward** — each slide (except last) ends with curiosity-gap sentence
+- [ ] **VO emotional curve varies** — not flat monologue; alternates excitement/calm/tension/payoff
+- [ ] **No banned VO patterns** — no "接下来", "好的", "那么", "以上就是" as transitions
+
+### Storyboard Consistency
+
+- [ ] **Animation speed matches act** — Act 1 fast (0.15-0.35s), Act 2 medium (0.3-0.6s), Act 3 slow (0.5-1.0s)
+- [ ] **Hook slides use emphasis animations** — quick push, quick pull, or scale pop for hook reveals
+- [ ] **At least 3 different easing functions** across the entire video
 
 ### Technical Quality (All Slides)
 
